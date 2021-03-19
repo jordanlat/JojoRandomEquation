@@ -1,0 +1,7 @@
+{
+  "name": "Jojo's Random Equation",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
