@@ -2,6 +2,7 @@ import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolba
 import { useEffect, useState } from 'react';
 import Equation from '../components/Equation';
 import MButton from '../components/mButton';
+import Lose from '../components/Lose';
 import './Main.css';
 /*
 let valueA = 0;
@@ -18,12 +19,13 @@ export function Main(props) {
   const [result, setResult] = useState(0);
   const [firstLoad, setFirstLoad] = useState(true);
   const [answer, setAnswer] = useState(0);
+  const [hideLose, setHideLose] = useState(true);
 
 
-if (firstLoad) {
-  setEquation();
-  setFirstLoad(false);
-}
+  if (firstLoad) {
+    setEquation();
+    setFirstLoad(false);
+  }
 
 
 
@@ -37,6 +39,7 @@ if (firstLoad) {
 
   function isSolve() {
     let result = 0;
+  
     if (myOperator === 0) {
       result = valueA + valueB;
     } else if (myOperator === 1) {
@@ -49,20 +52,31 @@ if (firstLoad) {
 
     if (result == answer) {
       console.log("CORRECT");
-
+      setEquation();
+      setAnswer();
+      //reset();
     } else {
       console.log("PERDU");
+      setHideLose(false);
+      
     }
-    setEquation();
+    setResult(result);
     setIsOK(false);
   }
+
+  function reset() {
+    setHideLose(true);
+    setAnswer();
+    setEquation();
+  }
+
 
 
   function setEquation() {
     while (isOK === false) {
       const newA = dice(15);
       const newB = dice(15);
-      const newOper= dice(4);
+      const newOper = dice(4);
 
       valueA = newA;
       valueB = newB;
@@ -107,14 +121,27 @@ if (firstLoad) {
       <IonContent>
         <Equation valueA={valueA} valueB={valueB} myOperator={myOperator} />
       </IonContent>
-      <IonContent>
+      <IonContent hidden={hideLose}>
+        <div>
+          <Lose g_reponse={result} u_reponse={answer} />
+        </div>
+        <div>
+          <IonButton onClick={() => {
+            reset();
+          }}>
+            Recommencer
+        </IonButton>
+        </div>
+
+      </IonContent>
+      <IonContent hidden={!hideLose}>
         <form onSubmit={(e) => {
           e.preventDefault();
+          console.log()
           isSolve();
-          setAnswer();
         }}>
           <IonItem>
-            <IonInput type="number" value={answer} placeholder="Votre reponse" onIonChange={(e) => {
+            <IonInput autofocus={true} type="number" value={answer} placeholder="Votre reponse" onIonChange={(e) => {
               setAnswer(e.detail.value);
             }}></IonInput>
             <IonButton>OK</IonButton>
