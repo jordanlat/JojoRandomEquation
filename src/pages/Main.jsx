@@ -16,14 +16,22 @@ export function Main(props) {
   const [mbrSolved, setNbrSolved] = useState();
   let [isOK, setIsOK] = useState(false);
   const [result, setResult] = useState(0);
-
+  const [firstLoad, setFirstLoad] = useState(true);
   const [answer, setAnswer] = useState(0);
+
+
+if (firstLoad) {
+  setEquation();
+  setFirstLoad(false);
+}
+
+
+
 
 
   function dice(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
-
 
 
 
