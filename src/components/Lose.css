@@ -1,7 +1,10 @@
 .text {
      color: blanchedalmond;
      font-size: x-large;
+     /*
      padding: 7vh;
+     margin-bottom: 5vh;
+     */
 }
 
 .center {
@@ -9,4 +12,8 @@
     flex-direction: column;
     text-align: center;
     margin-top: 20px;
+}
+
+.score{
+    max-height: 50px;
 }

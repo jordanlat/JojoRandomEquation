@@ -21,22 +21,18 @@ export function Main(props) {
   const [answer, setAnswer] = useState(0);
   const [hideLose, setHideLose] = useState(true);
   const [pseudo, setPseudo] = useState("toto");
+  const [leaderBoards, setLeaderBoards] = useState([]);
 
 
   if (firstLoad) {
     setEquation();
     setFirstLoad(false);
+    get_all();
   }
-
-
-
-
 
   function dice(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
-
-
 
   function isSolve() {
     let result = 0;
@@ -56,7 +52,6 @@ export function Main(props) {
       setEquation();
       setAnswer();
       setNbrSolved(nbrSolved + 1);
-      //reset();
     } else {
       console.log("PERDU");
       setHideLose(false);
@@ -135,6 +130,18 @@ export function Main(props) {
       setMyOperator(newOper);
     }
   }
+
+function get_all(){
+  fetch('http://localhost:82/leaderboards?page=1')
+  .then(response =>response.json())
+  .then(data => {
+    setLeaderBoards(data['hydra:member']);
+  });
+}
+
+console.log('from, get all',leaderBoards);
+
+
   return (
     <IonPage>
       <IonHeader>
@@ -142,8 +149,8 @@ export function Main(props) {
           <IonTitle>Jojo's Random Equation</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        <p>Nombre de resolutions: {nbrSolved}</p>
+      <IonContent className="score">
+        <h3>Score: {nbrSolved}</h3>
       </IonContent>
       <IonContent>
         <Equation valueA={valueA} valueB={valueB} myOperator={myOperator} />
@@ -151,7 +158,7 @@ export function Main(props) {
           <Lose g_reponse={result} u_reponse={answer} />
         </IonContent>
       </IonContent>
-      <IonContent hidden={hideLose}>
+      <IonContent hidden={hideLose} className="medium_max_height">
         <IonItem>
           <IonLabel>Entrer un pseudo:</IonLabel>
           <IonInput autofocus={true} type="text" value={pseudo} placeholder="Votre pseudo" onIonChange={(e) => {
@@ -166,7 +173,7 @@ export function Main(props) {
         </IonButton>
 
       </IonContent>
-      <IonContent hidden={!hideLose}>
+      <IonContent hidden={!hideLose} className="lower_max_height">
         <form onSubmit={(e) => {
           e.preventDefault();
           console.log()
@@ -179,6 +186,16 @@ export function Main(props) {
             <IonButton>OK</IonButton>
           </IonItem>
         </form>
+      </IonContent>
+      <IonContent>
+        <IonLabel className="center">Leader Boards</IonLabel>
+            {
+              leaderBoards.slice(0,4).map((e, index)=> {
+                return (
+                  <IonItem key={index}><p>{e.id}. {e.pseudo} - {e.score}</p></IonItem>
+                )
+              })
+            }
       </IonContent>
     </IonPage>
   );

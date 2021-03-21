@@ -4,3 +4,11 @@
 */
 color: blanchedalmond;
 }
+
+.medium_max_height{
+    max-height: 120px;
+}
+
+.lower_max_height{
+    max-height: 50px;
+}
