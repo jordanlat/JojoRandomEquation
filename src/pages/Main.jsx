@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolbar, IonRow, IonCol, IonList, IonInput, IonItemDivider, IonItem } from '@ionic/react';
+import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolbar, IonRow, IonCol, IonList, IonInput, IonItemDivider, IonItem, IonLabel } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import Equation from '../components/Equation';
 import MButton from '../components/mButton';
@@ -14,12 +14,13 @@ export function Main(props) {
   let [valueA, setValueA] = useState(1);
   let [valueB, setValueB] = useState(1);
   let [myOperator, setMyOperator] = useState(0);
-  const [mbrSolved, setNbrSolved] = useState();
+  const [nbrSolved, setNbrSolved] = useState(0);
   let [isOK, setIsOK] = useState(false);
   const [result, setResult] = useState(0);
   const [firstLoad, setFirstLoad] = useState(true);
   const [answer, setAnswer] = useState(0);
   const [hideLose, setHideLose] = useState(true);
+  const [pseudo, setPseudo] = useState("toto");
 
 
   if (firstLoad) {
@@ -39,7 +40,7 @@ export function Main(props) {
 
   function isSolve() {
     let result = 0;
-  
+
     if (myOperator === 0) {
       result = valueA + valueB;
     } else if (myOperator === 1) {
@@ -54,11 +55,12 @@ export function Main(props) {
       console.log("CORRECT");
       setEquation();
       setAnswer();
+      setNbrSolved(nbrSolved + 1);
       //reset();
     } else {
       console.log("PERDU");
       setHideLose(false);
-      
+
     }
     setResult(result);
     setIsOK(false);
@@ -68,8 +70,30 @@ export function Main(props) {
     setHideLose(true);
     setAnswer();
     setEquation();
+    setNbrSolved(0);
+    setPseudo(' ');
   }
 
+  function validate() {
+    const score = nbrSolved;
+    const newPseudo = pseudo;
+
+    const data = {
+      pseudo: newPseudo,
+      score: score
+    }
+
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    };
+    fetch('http://localhost:82/leaderboards', requestOptions)
+      .then(response => response.json())
+      .then(data => console.log(data));
+
+  }
 
 
   function setEquation() {
@@ -119,19 +143,27 @@ export function Main(props) {
         </IonToolbar>
       </IonHeader>
       <IonContent>
+        <p>Nombre de resolutions: {nbrSolved}</p>
+      </IonContent>
+      <IonContent>
         <Equation valueA={valueA} valueB={valueB} myOperator={myOperator} />
+        <IonContent hidden={hideLose}>
+          <Lose g_reponse={result} u_reponse={answer} />
+        </IonContent>
       </IonContent>
       <IonContent hidden={hideLose}>
-        <div>
-          <Lose g_reponse={result} u_reponse={answer} />
-        </div>
-        <div>
-          <IonButton onClick={() => {
-            reset();
-          }}>
-            Recommencer
+        <IonItem>
+          <IonLabel>Entrer un pseudo:</IonLabel>
+          <IonInput autofocus={true} type="text" value={pseudo} placeholder="Votre pseudo" onIonChange={(e) => {
+            setPseudo(e.detail.value);
+          }}></IonInput>
+        </IonItem>
+        <IonButton className="center" onClick={() => {
+          reset();
+          validate();
+        }}>
+          Recommencer
         </IonButton>
-        </div>
 
       </IonContent>
       <IonContent hidden={!hideLose}>

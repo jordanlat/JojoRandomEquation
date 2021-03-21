@@ -1,0 +1,12 @@
+.text {
+     color: blanchedalmond;
+     font-size: x-large;
+     padding: 7vh;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: 20px;
+}
