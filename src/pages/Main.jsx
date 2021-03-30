@@ -4,6 +4,7 @@ import Equation from '../components/Equation';
 import MButton from '../components/mButton';
 import Lose from '../components/Lose';
 import './Main.css';
+import {fireSubmit, FireGet} from '../components/access';
 /*
 let valueA = 0;
 let valueB = 0;
@@ -22,8 +23,18 @@ export function Main(props) {
   const [hideLose, setHideLose] = useState(true);
   const [pseudo, setPseudo] = useState("toto");
   const [leaderBoards, setLeaderBoards] = useState([]);
+/*
+  var admin = require("firebase-admin");
+  var db = admin.database();
+  var ref = db.ref("https://jojo-s-random-equation-default-rtdb.europe-west1.firebasedatabase.app/");
 
-
+  ref.on("value", function(snapshot) {
+    console.log(snapshot.val());
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
+  
+*/
   if (firstLoad) {
     setEquation();
     setFirstLoad(false);
@@ -73,6 +84,8 @@ export function Main(props) {
     const score = nbrSolved;
     const newPseudo = pseudo;
 
+    fireSubmit(pseudo, nbrSolved);
+/*
     const data = {
       pseudo: newPseudo,
       score: score
@@ -87,6 +100,7 @@ export function Main(props) {
     fetch('http://localhost:82/leaderboards', requestOptions)
       .then(response => response.json())
       .then(data => console.log(data));
+*/
 
   }
 
@@ -139,8 +153,6 @@ function get_all(){
   });
 }
 
-console.log('from, get all',leaderBoards);
-
 
   return (
     <IonPage>
@@ -183,7 +195,9 @@ console.log('from, get all',leaderBoards);
             <IonInput autofocus={true} type="number" value={answer} placeholder="Votre reponse" onIonChange={(e) => {
               setAnswer(e.detail.value);
             }}></IonInput>
-            <IonButton>OK</IonButton>
+            <IonButton onClick={(e)=>{
+              console.log("on submit",e);
+            }}>OK</IonButton>
           </IonItem>
         </form>
       </IonContent>
