@@ -5,11 +5,7 @@ import MButton from '../components/mButton';
 import Lose from '../components/Lose';
 import './Main.css';
 import {fireSubmit, FireGet} from '../components/access';
-/*
-let valueA = 0;
-let valueB = 0;
-let myOperator = "";
-*/
+
 export function Main(props) {
 
   let [valueA, setValueA] = useState(1);
@@ -22,7 +18,8 @@ export function Main(props) {
   const [answer, setAnswer] = useState(0);
   const [hideLose, setHideLose] = useState(true);
   const [pseudo, setPseudo] = useState("toto");
-  const [leaderBoards, setLeaderBoards] = useState([]);
+  let [leaderBoards, setLeaderBoards] = useState([]);
+
 /*
   var admin = require("firebase-admin");
   var db = admin.database();
@@ -36,9 +33,9 @@ export function Main(props) {
   
 */
   if (firstLoad) {
+    get_all();
     setEquation();
     setFirstLoad(false);
-    get_all();
   }
 
   function dice(max) {
@@ -73,6 +70,7 @@ export function Main(props) {
   }
 
   function reset() {
+    get_all();
     setHideLose(true);
     setAnswer();
     setEquation();
@@ -81,27 +79,7 @@ export function Main(props) {
   }
 
   function validate() {
-    const score = nbrSolved;
-    const newPseudo = pseudo;
-
     fireSubmit(pseudo, nbrSolved);
-/*
-    const data = {
-      pseudo: newPseudo,
-      score: score
-    }
-
-
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    };
-    fetch('http://localhost:82/leaderboards', requestOptions)
-      .then(response => response.json())
-      .then(data => console.log(data));
-*/
-
   }
 
 
@@ -145,12 +123,13 @@ export function Main(props) {
     }
   }
 
-function get_all(){
-  fetch('http://localhost:82/leaderboards?page=1')
-  .then(response =>response.json())
-  .then(data => {
-    setLeaderBoards(data['hydra:member']);
-  });
+ async function get_all(){
+  leaderBoards = await FireGet();
+  setLeaderBoards(leaderBoards);
+}
+
+function setBoard (){
+  console.log(leaderBoards.reverse());
 }
 
 
@@ -188,27 +167,28 @@ function get_all(){
       <IonContent hidden={!hideLose} className="lower_max_height">
         <form onSubmit={(e) => {
           e.preventDefault();
-          console.log()
           isSolve();
         }}>
           <IonItem>
             <IonInput autofocus={true} type="number" value={answer} placeholder="Votre reponse" onIonChange={(e) => {
               setAnswer(e.detail.value);
             }}></IonInput>
-            <IonButton onClick={(e)=>{
-              console.log("on submit",e);
-            }}>OK</IonButton>
           </IonItem>
         </form>
       </IonContent>
       <IonContent>
         <IonLabel className="center">Leader Boards</IonLabel>
             {
-              leaderBoards.slice(0,4).map((e, index)=> {
+
+              leaderBoards.reverse().slice(0,4).map((e, index)=> {
+                console.log(e);
+
                 return (
-                  <IonItem key={index}><p>{e.id}. {e.pseudo} - {e.score}</p></IonItem>
+                  <IonItem key={index}><p>{index + 1}. {e.pseudo} - {e.score}</p></IonItem>
                 )
+
               })
+
             }
       </IonContent>
     </IonPage>
