@@ -2,6 +2,7 @@ import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolba
 import { useEffect, useState } from 'react';
 import Equation from '../components/Equation';
 import MButton from '../components/mButton';
+import List from '../components/Leaderboard';
 import Lose from '../components/Lose';
 import './Main.css';
 import {fireSubmit, FireGet} from '../components/access';
@@ -70,12 +71,13 @@ export function Main(props) {
   }
 
   function reset() {
-    get_all();
+    
     setHideLose(true);
     setAnswer();
     setEquation();
     setNbrSolved(0);
     setPseudo(' ');
+    get_all();
   }
 
   function validate() {
@@ -124,14 +126,10 @@ export function Main(props) {
   }
 
  async function get_all(){
+   console.log("GET ALL");
   leaderBoards = await FireGet();
   setLeaderBoards(leaderBoards);
 }
-
-function setBoard (){
-  console.log(leaderBoards.reverse());
-}
-
 
   return (
     <IonPage>
@@ -176,21 +174,7 @@ function setBoard (){
           </IonItem>
         </form>
       </IonContent>
-      <IonContent>
-        <IonLabel className="center">Leader Boards</IonLabel>
-            {
-
-              leaderBoards.reverse().slice(0,4).map((e, index)=> {
-                console.log(e);
-
-                return (
-                  <IonItem key={index}><p>{index + 1}. {e.pseudo} - {e.score}</p></IonItem>
-                )
-
-              })
-
-            }
-      </IonContent>
+      <List list={leaderBoards} />
     </IonPage>
   );
 };
