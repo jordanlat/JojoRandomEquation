@@ -7,10 +7,10 @@ import firebase from "firebase/app";
 
 
 var config = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    databaseURL: ""
+    apiKey: "AIzaSyCBUQo3FszolCAxDj2Sj1U1Dvogp8husL0",
+    authDomain: "jojo-s-random-equation.firebaseapp.com",
+    projectId: "jojo-s-random-equation",
+    databaseURL: "https://jojo-s-random-equation-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 const firebaseApp = firebase.initializeApp(config);
 

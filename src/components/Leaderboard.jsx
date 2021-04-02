@@ -19,7 +19,7 @@ export default function List(props) {
             <IonLabel className="center">Leader Boards</IonLabel>
             {
 
-                newList.reverse().slice(0,4).map((e, index) => {
+                newList.slice(0,4).map((e, index) => {
                     console.log(e);
                     return (
                         <IonItem key={index}><p  className='center_text'>{index + 1}. {e.pseudo} - {e.score}</p></IonItem>
