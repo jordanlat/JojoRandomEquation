@@ -12,3 +12,18 @@ color: blanchedalmond;
 .lower_max_height{
     max-height: 50px;
 }
+
+
+.pad {
+    display: flex;
+    justify-content: space-around;
+}
+
+.score {
+    font-size: medium;
+}
+
+.number {
+   height: 5vh;
+   width: 8vw; 
+}

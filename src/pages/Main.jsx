@@ -1,11 +1,11 @@
-import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolbar, IonRow, IonCol, IonList, IonInput, IonItemDivider, IonItem, IonLabel } from '@ionic/react';
+import { IonButton, IonContent, IonGrid, IonHeader, IonPage, IonTitle, IonToolbar, IonRow, IonCol, IonList, IonInput, IonItemDivider, IonItem, IonLabel, IonIcon } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import Equation from '../components/Equation';
 import MButton from '../components/mButton';
 import List from '../components/Leaderboard';
 import Lose from '../components/Lose';
 import './Main.css';
-import {fireSubmit, FireGet} from '../components/access';
+import { fireSubmit, FireGet } from '../components/access';
 
 export function Main(props) {
 
@@ -18,25 +18,27 @@ export function Main(props) {
   const [firstLoad, setFirstLoad] = useState(true);
   const [answer, setAnswer] = useState(0);
   const [hideLose, setHideLose] = useState(true);
-  const [pseudo, setPseudo] = useState("toto");
+  const [pseudo, setPseudo] = useState('');
   let [leaderBoards, setLeaderBoards] = useState([]);
+  let [tempBoard, setTempBoard] = useState([]);
 
-/*
-  var admin = require("firebase-admin");
-  var db = admin.database();
-  var ref = db.ref("https://jojo-s-random-equation-default-rtdb.europe-west1.firebasedatabase.app/");
-
-  ref.on("value", function(snapshot) {
-    console.log(snapshot.val());
-  }, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-  });
+  /*
+    var admin = require("firebase-admin");
+    var db = admin.database();
+    var ref = db.ref("https://jojo-s-random-equation-default-rtdb.europe-west1.firebasedatabase.app/");
   
-*/
+    ref.on("value", function(snapshot) {
+      console.log(snapshot.val());
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+    });
+    
+  */
   if (firstLoad) {
     get_all();
     setEquation();
     setFirstLoad(false);
+    console.log('firstLoad');
   }
 
   function dice(max) {
@@ -57,12 +59,13 @@ export function Main(props) {
     }
 
     if (result == answer) {
-      console.log("CORRECT");
+      //console.log("CORRECT");
       setEquation();
       setAnswer();
       setNbrSolved(nbrSolved + 1);
     } else {
-      console.log("PERDU");
+      //console.log("PERDU");
+      get_all();
       setHideLose(false);
 
     }
@@ -71,7 +74,7 @@ export function Main(props) {
   }
 
   function reset() {
-    
+
     setHideLose(true);
     setAnswer();
     setEquation();
@@ -83,6 +86,7 @@ export function Main(props) {
   function validate() {
     fireSubmit(pseudo, nbrSolved);
   }
+
 
 
   function setEquation() {
@@ -125,11 +129,45 @@ export function Main(props) {
     }
   }
 
- async function get_all(){
-   console.log("GET ALL");
-  leaderBoards = await FireGet();
-  setLeaderBoards(leaderBoards);
-}
+  async function get_all() {
+    let tempData = await FireGet();
+    //leaderBoards = await FireGet();
+    setTempBoard(tempData);
+    //console.log('tempBoard: ',tempBoard);
+    reverse();
+  }
+
+  function reverse() {
+    const temparray = [];
+    tempBoard.reverse().map((e, index) => {
+      //console.log(e, index);
+      temparray[index] = e;
+    });
+
+    setLeaderBoards(temparray);
+  }
+
+  function getNumber(number) {
+     console.log(number);
+     let prevAns = answer;
+     if(prevAns == null || prevAns == undefined) {
+      prevAns = 0;
+     }
+     setAnswer(prevAns + '' + number );
+     console.log(answer);
+  }
+
+  function nbrRST() {
+    console.log('RESETOO');
+    setAnswer(0);
+  }
+
+  function chrono () {
+    let time = new Date();
+    console.log(time.getSeconds());
+    time.setSeconds(0);
+    console.log(time.getSeconds());
+  }
 
   return (
     <IonPage>
@@ -139,7 +177,7 @@ export function Main(props) {
         </IonToolbar>
       </IonHeader>
       <IonContent className="score">
-        <h3>Score: {nbrSolved}</h3>
+        <h1>Score: {nbrSolved}</h1>
       </IonContent>
       <IonContent>
         <Equation valueA={valueA} valueB={valueB} myOperator={myOperator} />
@@ -147,7 +185,10 @@ export function Main(props) {
           <Lose g_reponse={result} u_reponse={answer} />
         </IonContent>
       </IonContent>
-      <IonContent hidden={hideLose} className="medium_max_height">
+      <IonContent hidden={hideLose}>
+        <List list={leaderBoards} />
+      </IonContent>
+      <IonContent hidden={hideLose} hidden={hideLose} className="medium_max_height">
         <IonItem>
           <IonLabel>Entrer un pseudo:</IonLabel>
           <IonInput autofocus={true} type="text" value={pseudo} placeholder="Votre pseudo" onIonChange={(e) => {
@@ -155,12 +196,12 @@ export function Main(props) {
           }}></IonInput>
         </IonItem>
         <IonButton className="center" onClick={() => {
+          console.log('reset');
           reset();
           validate();
         }}>
-          Recommencer
+          Valider
         </IonButton>
-
       </IonContent>
       <IonContent hidden={!hideLose} className="lower_max_height">
         <form onSubmit={(e) => {
@@ -174,7 +215,37 @@ export function Main(props) {
           </IonItem>
         </form>
       </IonContent>
-      <List list={leaderBoards} />
+
+      <IonContent hidden={!hideLose}>
+        <IonGrid>
+          <IonRow className="pad">
+            <IonButton className='number' onClick={()=>getNumber(7)}>7</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(8)}>8</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(9)}>9</IonButton>
+          </IonRow>
+
+
+          <IonRow className="pad">
+            <IonButton className='number'  onClick={()=>getNumber(4)}>4</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(5)}>5</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(6)}>6</IonButton>
+          </IonRow>
+
+
+          <IonRow className="pad">
+            <IonButton className='number'  onClick={()=>getNumber(1)}>1</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(2)}>2</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(3)}>3</IonButton>
+          </IonRow>
+
+          <IonRow className="pad">
+            <IonButton color="danger" className='number'  onClick={()=>nbrRST()}>X</IonButton>
+            <IonButton className='number'  onClick={()=>getNumber(0)}>0</IonButton>
+            <IonButton color="success" className='number'  onClick={()=>isSolve()}>OK</IonButton>
+          </IonRow>
+        </IonGrid>
+      </IonContent>
+      <IonButton onClick={()=>chrono()}>OK</IonButton>
     </IonPage>
   );
 };
